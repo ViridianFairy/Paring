@@ -3,15 +3,17 @@ import $ajax from 'axios'
 import './style.css'
 const Main = document.getElementById('main')
 const Loading = document.getElementById('load-wrapper')
+const Extra = document.getElementById('extra')
 var echarts = require('echarts/lib/echarts');
 require('echarts/lib/chart/line')
 require('echarts/lib/chart/map')
 require('echarts/lib/component/tooltip')
 require('echarts/lib/component/visualMap')
 require('echarts/lib/component/geo')
-var myChart = echarts.init(document.getElementById('main'));
+var myChart = null
 window.jump = function (name) {
    Loading.style.display = 'block'
+   Extra.style.display = 'none'
    if (!name) return
    make(name)
 }
@@ -24,11 +26,11 @@ function getFullName(name) {
    })
    return obj.nameFull
 }
-function back(){
+window.back = function(){
+   Extra.style.display = 'none'
    Main.style.display = 'none'
    Loading.style.display="block"
    myChart.dispose()
-   
    dataList = []
    dataList2 = []
    dataTime = []
@@ -166,6 +168,8 @@ function make(query) {
          })
          myChart = echarts.init(document.getElementById('main'))
          Loading.style.display = 'none'
+         Extra.style.display = 'block'
+         Extra.innerHTML = '点击这里返回'
          myChart.setOption({
             xAxis: {
                type: 'category',
@@ -190,9 +194,9 @@ function make(query) {
                    label:'cross',
                    show:true
                },
-                 formatter: function () {
-                  return '{a0}:{c0}<br />{a1}:{c1}'
-               }
+               //   formatter: function () {
+               //    return 
+               // }
                }
          });
          myChart.dispatchAction({
@@ -201,6 +205,7 @@ function make(query) {
          });
       })
 }
+Extra.style.display = 'none'
 $ajax.get('https://lab.isaaclin.cn/nCoV/api/area')
    .then(doc => {
       doc.data.results.forEach(v => {
@@ -213,8 +218,11 @@ $ajax.get('https://lab.isaaclin.cn/nCoV/api/area')
       begin()
    })
 function begin(){
+   myChart = echarts.init(document.getElementById('main'))
    myChart.setOption(option);
    Loading.style.display = 'none'
    Main.style.opacity = '1'
    Main.style.display = 'block'
+   Extra.style.display = 'block'
+   Extra.innerHTML = '点击省份可查看详情'
 }
