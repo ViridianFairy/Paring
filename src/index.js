@@ -11,6 +11,7 @@ require('echarts/lib/component/visualMap')
 require('echarts/lib/component/geo')
 var myChart = echarts.init(document.getElementById('main'));
 window.jump = function (name) {
+   Loading.style.display = 'block'
    if (!name) return
    make(name)
 }
@@ -164,6 +165,7 @@ function make(query) {
             )
          })
          myChart = echarts.init(document.getElementById('main'))
+         Loading.style.display = 'none'
          myChart.setOption({
             xAxis: {
                type: 'category',
@@ -172,7 +174,7 @@ function make(query) {
             },
             yAxis: {
                type: 'value',
-               name: getFullName(query) + '的确诊人数啊啊'
+               name: query + '的确诊人数'
             },
             series: [{
                data: dataList2,
@@ -187,7 +189,10 @@ function make(query) {
                    type: "line", // 默认为直线，可选为：'line' | 'shadow'
                    label:'cross',
                    show:true
-                 }, 
+               },
+                 formatter: function () {
+                  return '{a0}:{c0}<br />{a1}:{c1}'
+               }
                }
          });
          myChart.dispatchAction({
