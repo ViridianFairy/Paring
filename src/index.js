@@ -154,7 +154,7 @@ function make(query) {
       .then(doc => {
          doc.data.results.forEach(v => {
             let t = new Date(v.updateTime)
-            let time = `${t.getMonth() + 1}.${t.getDate()}`
+            let time = `${t.getMonth() + 1}月${t.getDate()}日`
             if (dataTime.includes(time)) return
             dataTime.unshift(time)
             dataList2.unshift(
