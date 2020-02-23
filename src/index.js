@@ -31,7 +31,6 @@ window.back = function(){
    Main.style.display = 'none'
    Loading.style.display="block"
    myChart.dispose()
-   dataList = []
    dataList2 = []
    dataTime = []
    begin()
@@ -81,6 +80,7 @@ var option = {
       formatter: function (params, ticket, callback) {
          var tag = params.seriesName
          var name = params.name
+         if(name=='山东') name='沙东'
          var value = params.value
          if (name == '南海诸岛') return ''
          return `<div style="display:flex">
@@ -145,12 +145,7 @@ var option = {
       }
    ]
 };
-myChart.on("mouseover", function (params) {
-   myChart.dispatchAction({
-      type: 'downplay',
-      name: '南海诸岛'
-   });
-});
+
 var dataList2 = []
 var dataTime = []
 function make(query) {
@@ -220,6 +215,12 @@ $ajax.get('https://lab.isaaclin.cn/nCoV/api/area')
 function begin(){
    myChart = echarts.init(document.getElementById('main'))
    myChart.setOption(option);
+   myChart.on("mouseover", function (params) {
+      myChart.dispatchAction({
+         type: 'downplay',
+         name: '南海诸岛'
+      });
+   });
    Loading.style.display = 'none'
    Main.style.opacity = '1'
    Main.style.display = 'block'
