@@ -9,6 +9,7 @@ module.exports = {
       path: path.resolve(__dirname, './dist'),
       publicPath: 'http://localhost:6500/dist/',
    },
+   
    module: {
       rules: [
          { test: /\.txt$/, use: 'css-loader' },
@@ -18,17 +19,4 @@ module.exports = {
          }
       ]
    },
-   // devServer: {
-   //    contentBase: path.resolve(__dirname, 'static'),
-   //    host: '0.0.0.0',
-   //    port: 6500,
-   //    headers: {
-   //       'Access-Control-Allow-Origin': '*'
-   //    },
-   //    hot: true,
-   //    inline: true
-   // },
-   // plugins: [
-   //    new webpack.HotModuleReplacementPlugin()
-   // ]
 };

@@ -1,9 +1,11 @@
 import 'echarts/map/js/china'
 import $ajax from 'axios'
-import './style.css'
+// import './style.css'
 const Main = document.getElementById('main')
 const Loading = document.getElementById('load-wrapper')
 const Extra = document.getElementById('extra')
+const D1 = document.getElementById('data')
+const D2 = document.getElementById('data2')
 var echarts = require('echarts/lib/echarts');
 require('echarts/lib/chart/line')
 require('echarts/lib/chart/map')
@@ -14,6 +16,8 @@ var myChart = null
 window.jump = function (name) {
    Loading.style.display = 'block'
    Extra.style.display = 'none'
+   D1.style.display = 'none'
+   D2.style.display = 'block'
    if (!name) return
    make(name)
 }
@@ -26,10 +30,12 @@ function getFullName(name) {
    })
    return obj.nameFull
 }
-window.back = function(){
+window.back = function () {
    Extra.style.display = 'none'
    Main.style.display = 'none'
-   Loading.style.display="block"
+   Loading.style.display = "block"
+   D2.style.display = 'none'
+   D1.style.display = 'block'
    myChart.dispose()
    dataList2 = []
    dataTime = []
@@ -68,7 +74,7 @@ var dataList = [
    { name: '四川', nameFull: '四川省', value: randomValue() },
    { name: '宁夏', nameFull: '宁夏回族自治区', value: randomValue() },
    { name: '海南', nameFull: '海南省', value: randomValue() },
-   { name: '台湾', nameFull: '台湾省', value: randomValue() },
+   { name: '台湾', nameFull: '台湾', value: randomValue() },
    { name: '香港', vnameFull: '香港', value: randomValue() },
    { name: '澳门', vnameFull: '澳门', value: randomValue() }
 ]
@@ -80,12 +86,11 @@ var option = {
       formatter: function (params, ticket, callback) {
          var tag = params.seriesName
          var name = params.name
-         if(name=='山东') name='沙东'
          var value = params.value
          if (name == '南海诸岛') return ''
          return `<div style="display:flex">
          <div style="padding-left:2px">
-            地区：${name}<br>${tag}：${value}
+            地区：${name == '山东' ? '沙东' : name}<br>${tag}：${value}
          </div>
          <a style="margin: 3px 0;border-left:1px solid #ccc;padding:2px;
          display:flex;justify-content:center;align-items:center;
@@ -173,30 +178,51 @@ function make(query) {
             },
             yAxis: {
                type: 'value',
-               name: query + '的确诊人数'
+               name: query
             },
             series: [{
                data: dataList2,
                type: 'line',
-               smooth: true
+               smooth: true,
+               name:'确诊人数',
+               lineStyle:{
+                  normal:{
+                     color:'#FC744F',
+                     width:4
+                  }
+               }
             }],
             tooltip: {
                //鼠标悬停提示内容
                trigger: 'axis', // 触发类型，默认数据触发，可选为：'axis' item
                axisPointer: {
-                   // 坐标轴指示器，坐标轴触发有效
-                   type: "line", // 默认为直线，可选为：'line' | 'shadow'
-                   label:'cross',
-                   show:true
+                  // 坐标轴指示器，坐标轴触发有效
+                  type: "line", // 默认为直线，可选为：'line' | 'shadow'
+                  label: 'cross',
+                  show: true
                },
-               //   formatter: function () {
-               //    return 
-               // }
+               formatter: function (a) {
+                  //console.log(a)
+                  let list = []
+                  let listItem = ''
+                  for (var i = 0; i < a.length; i++) {
+                     list.push(
+                        
+                        '<i style="display: inline-block;width: 10px;height: 10px;background: ' +
+                        a[i].color +
+                        ';margin-right: 5px;border-radius: 50%;}"></i><span style="width:auto; display:inline-block;">' +
+                        '截至' + a[i].name + '，<br>'+'累计'+a[i].seriesName +'：'
+                        +a[i].value+'&nbsp'
+                     )
+                  }
+                  listItem = list.join('<br>')
+                  return '<div class="showBox">' + listItem + '</div>'
                }
+            }
          });
          myChart.dispatchAction({
             type: 'showTip',
-            seriesIndex:1,  // 显示第几个series
+            seriesIndex: 1,  // 显示第几个series
          });
       })
 }
@@ -212,7 +238,7 @@ $ajax.get('https://lab.isaaclin.cn/nCoV/api/area')
       })
       begin()
    })
-function begin(){
+function begin() {
    myChart = echarts.init(document.getElementById('main'))
    myChart.setOption(option);
    myChart.on("mouseover", function (params) {
